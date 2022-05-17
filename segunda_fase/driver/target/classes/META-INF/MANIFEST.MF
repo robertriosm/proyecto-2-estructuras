@@ -1,0 +1,46 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.neo4j.driver
+Build-Jdk: 17.0.2
+Built-By: paqui
+Bundle-Description: Access to the Neo4j graph database through Java
+Bundle-License: http://www.apache.org/licenses/LICENSE-2.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Neo4j Java Driver
+Bundle-SymbolicName: org.neo4j.driver.neo4j-java-driver
+Bundle-Version: 5.0.0.v20220517-1808
+Created-By: Apache Maven Bundle Plugin
+Export-Package: org.neo4j.driver;version="5.0.0",org.neo4j.driver.async;
+ version="5.0.0",org.neo4j.driver.exceptions;version="5.0.0",org.neo4j.d
+ river.exceptions.value;version="5.0.0",org.neo4j.driver.net;version="5.
+ 0.0",org.neo4j.driver.reactive;version="5.0.0",org.neo4j.driver.summary
+ ;version="5.0.0",org.neo4j.driver.types;version="5.0.0",org.neo4j.drive
+ r.util;version="5.0.0"
+Implementation-Version: 5.0-SNAPSHOT-${git.commit.id.abbrev}
+Import-Package: io.micrometer.core.instrument;resolution:=optional,io.mi
+ crometer.core.instrument.composite;resolution:=optional,io.netty.bootst
+ rap;version="[4.1,5)",io.netty.buffer;version="[4.1,5)",io.netty.channe
+ l;version="[4.1,5)",io.netty.channel.group;version="[4.1,5)",io.netty.c
+ hannel.nio;version="[4.1,5)",io.netty.channel.pool;version="[4.1,5)",io
+ .netty.channel.socket.nio;version="[4.1,5)",io.netty.handler.codec;vers
+ ion="[4.1,5)",io.netty.handler.codec.compression;version="[4.1,5)",io.n
+ etty.handler.ssl;version="[4.1,5)",io.netty.handler.timeout;version="[4
+ .1,5)",io.netty.resolver;version="[4.1,5)",io.netty.util;version="[4.1,
+ 5)",io.netty.util.concurrent;version="[4.1,5)",io.netty.util.internal;v
+ ersion="[4.1,5)",io.netty.util.internal.logging;version="[4.1,5)",javax
+ .net.ssl,org.neo4j.driver.async;version="[5.0,6)",org.neo4j.driver.exce
+ ptions;version="[5.0,6)",org.neo4j.driver.exceptions.value;version="[5.
+ 0,6)",org.neo4j.driver.summary;version="[5.0,6)",org.neo4j.driver.types
+ ;version="[5.0,6)",org.neo4j.driver.util;version="[5.0,6)",org.reactive
+ streams;version="[1.0,2)",org.slf4j;version="[1.7,2)";resolution:=optio
+ nal,reactor.core;version="[3.4,4)",reactor.core.publisher;version="[3.4
+ ,4)",reactor.core.scheduler;version="[3.4,4)",reactor.util.context;vers
+ ion="[3.4,4)",reactor.util.retry;version="[3.4,4)",javax.security.cert
+Include-Resource: META-INF/native-image/org.neo4j.driver/neo4j-java-driv
+ er/native-image.properties=src/main/resources/META-INF/native-image/org
+ .neo4j.driver/neo4j-java-driver/native-image.properties,META-INF/native
+ -image/org.neo4j.driver/neo4j-java-driver/reflection-config.json=src/ma
+ in/resources/META-INF/native-image/org.neo4j.driver/neo4j-java-driver/r
+ eflection-config.json
+Package: org/neo4j/driver
+Require-Capability: osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"
+Tool: Bnd-3.5.0.201709291849
