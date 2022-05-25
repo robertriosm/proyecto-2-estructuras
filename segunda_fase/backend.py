@@ -14,7 +14,7 @@ def create_user(username,
                 password,
                 nombre,
                 apellido,
-                edad,
+                fecha_nacimiento,
                 disponibilidad,
                 personalidad,
                 alergia,
@@ -23,21 +23,23 @@ def create_user(username,
                 ninos,
                 presupuesto,
                 tipo_vivienda,
+                tiene_jardin,
                 telefono):
 
-        print(username,
-                password,
-                nombre,
-                apellido,
-                edad,
-                disponibilidad,
-                personalidad,
-                alergia,
-                personas_en_casa,
-                mascotas_antes,
-                ninos,
-                presupuesto,
-                tipo_vivienda,
+        print(username + '\n' +
+                password + '\n' +
+                nombre + '\n' +
+                apellido + '\n' +
+                fecha_nacimiento + '\n' +
+                disponibilidad + '\n' +
+                personalidad + '\n' +
+                alergia + '\n' +
+                personas_en_casa + '\n' +
+                mascotas_antes + '\n' +
+                ninos + '\n' +
+                presupuesto + '\n' +
+                tipo_vivienda + '\n' +
+                tiene_jardin + '\n' +
                 telefono)
 
 # FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
