@@ -1,14 +1,14 @@
-Tipo,Nombre,Tiempo,Pelo,Actividad,Carácter,Cuidados ,Entrenado,Tamaño,Presupuesto
-Gato,Galatea,0,Largo,0,Introvertido,0,0,Grande,1
-Gato,Beto,1,Corto,0,Introvertido,0,0,Mediano,0
-Gato,Brownie,2,Largo,0,Extrovertido,0,0,Pequeño,0
-Gato,Manolo,3,Corto,1,Introvertido,1,0,Pequeño,1
-Gato,Braulio,4,Largo,0,Introvertido,1,1,Pequeño,1
-Gato,Ptolomeo,5,Calvo,1,Extrovertido,1,1,Pequeño,2
-Gato,Menelao,0,Corto,0,Introvertido,0,1,Pequeño,2
-Perro,Hermes,1,Largo,1,Introvertido,0,1,Grande,3
-Perro,Polifemo,2,Largo,0,Introvertido,1,1,Grande,4
-Perro,Firulais,3,Largo,1,Introvertido,1,1,Grande,5
-Perro,Chuchito,4,Corto,0,Introvertido,1,0,Grande,0
-Perro,Rayas,5,Corto,1,Introvertido,1,0,Grande,1
-Perro,Suertudo,0,Corto,0,Extrovertido,0,0,Grande,5
+Tipo,Nombre,Tiempo,Pelo,Actividad,Caracter,Cuidados ,Entrenado,Tamano,Presupuesto,Edad
+Gato,Galatea,0,Largo,0,Introvertido,0,0,3,1,0
+Gato,Beto,1,Corto,0,Introvertido,0,0,2,0,1
+Gato,Brownie,2,Largo,0,Extrovertido,0,0,1,0,2
+Gato,Manolo,3,Corto,1,Introvertido,1,0,1,1,3
+Gato,Braulio,4,Largo,0,Introvertido,1,1,1,1,10
+Gato,Ptolomeo,5,Calvo,1,Extrovertido,1,1,1,2,4
+Gato,Menelao,0,Corto,0,Introvertido,0,1,1,2,5
+Perro,Hermes,1,Largo,1,Introvertido,0,1,3,3,2
+Perro,Polifemo,2,Largo,0,Introvertido,1,1,3,4,3
+Perro,Firulais,3,Largo,1,Introvertido,1,1,3,5,6
+Perro,Chuchito,4,Corto,0,Introvertido,1,0,3,0,7
+Perro,Rayas,5,Corto,1,Introvertido,1,0,2,1,8
+Perro,Suertudo,0,Corto,0,Extrovertido,0,0,2,5,5
