@@ -7,10 +7,11 @@ INTEGRANTES:
 ROBERTO FRANCISCO RIOS MORALES, 20979.
 pongan sus nombres aqui xd
 '''
+
 from neo4j import GraphDatabase
 from neo4j.exceptions import ServiceUnavailable
-from neo4jrestclient.client import GraphDatabase
-from neo4jrestclient import client
+# from neo4jrestclient.client import GraphDatabase
+# from neo4jrestclient import client
 
 graph = GraphDatabase("http://localhost:7474", username="neo4j", password="hola")
 
