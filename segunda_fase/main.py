@@ -34,6 +34,7 @@ while op != '3':
     )
     op = input('Ingrese su opcion:')
 
+
     # hacer un login
     if op == '1':
         print('\nIngresar\n')
@@ -44,20 +45,16 @@ while op != '3':
             print('El username debe tener entre 8 y 20 caracteres.')
             user = input('Ingrese su username: ')
 
-        # validar la contrasna
+        # validar la contrasena
         passw =  input('Ingrese su contrasena: ')
         while len(passw) not in range(8, 21):
             print('La contrasena debe tener entre 8 y 20 caracteres.')
             passw = input('Ingrese su contrasena: ')
 
         # llamar a la db
-        if login_user(user, passw):
-            print('Ingreso exitoso')
+        login_user(user, passw, graphy)
+        print(f'\nIngreso exitoso, bienvenido, {user}\n')
 
-
-    # este es solo para pruebas!!!
-    elif op == 'Ye':
-        pruebas("goku", graphy)
 
 
     # crear un usuario nuevo
@@ -65,7 +62,7 @@ while op != '3':
         # validar username
         user = input('Ingrese un username: ')
         while (len(user) not in range(8, 21)) or username_exists(user, graphy):
-            print('El username debe tener entre 8 y 20 caracteres.')
+            print('El username debe tener entre 8 y 20 caracteres, o ya existe, pruebe de nuevo.')
             user = input('Ingrese su username: ')
 
         # validar constrasena

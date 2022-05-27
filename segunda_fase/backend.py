@@ -71,6 +71,52 @@ def create_user(username,
         print(e)
 
 
+# FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
+def username_exists(username, graph):
+    cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.username",username1=username)
+    try:
+        cursor.data()[0].get('p.username')
+        return True
+    except Exception:
+        return False
+
+
+# FUNCION PARA HACER UN INICIO DE SESION
+def login_user(username, password, graph):
+    if username_exists(username, graph):
+        cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.password", username1=username)
+        verify = cursor.data()[0].get('p.password')
+        if verify == password:
+            cursor = graph.run("""
+            MATCH (n:Persona {username: $username1})
+            SET n.loged = NOT n.loged
+            RETURN n
+            """, username1=username)
+            logedin = cursor.data()[0]
+            print(logedin)
+            return logedin
+
+# FUNCION PARA CREAR UNA NUEVA MASCOTA
+def create_pet(username, 
+                especie, 
+                edad, 
+                foto, 
+                independencia, 
+                tamano, 
+                requiere_entrenamiento, 
+                entrenada, 
+                caracter, 
+                condiciones, 
+                contacto):
+    pass
+
+# FUNCION PARA HACER LA RECOMENDACION
+def search_ideal_pet():
+    pass
+
+
+
+
 
 def pruebas(minombre, graph):
     try:
@@ -93,44 +139,6 @@ def pruebas(minombre, graph):
     except Exception as e:
         print('not ok')
         print(e)
-
-# FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
-def username_exists(username, graph):
-    cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.username",username1=username)
-    try:
-        cursor.data()[0].get('p.username')
-        print('El usuario ya existe, intente con otro!')
-        return True
-    except Exception:
-        return False
-
-# FUNCION PARA HACER UN INICIO DE SESION
-def login_user(username, password):
-    graphy = Graph("neo4j+s://7c20a412.databases.neo4j.io:7687", auth=("neo4j", "Tg5A8nvYBvV4m85KHiQH7Jv_K44vx0A8B2lmgU6dQdk"))
-    if username == 'yaexiste' and password == '12345678':
-        return True
-    print(username + '' + password)
-
-# FUNCION PARA CREAR UNA NUEVA MASCOTA
-def create_pet(username, 
-                especie, 
-                edad, 
-                foto, 
-                independencia, 
-                tamano, 
-                requiere_entrenamiento, 
-                entrenada, 
-                caracter, 
-                condiciones, 
-                contacto):
-    pass
-
-# FUNCION PARA HACER LA RECOMENDACION
-def search_ideal_pet():
-    pass
-
-
-
 
 
 
