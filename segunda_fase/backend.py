@@ -71,6 +71,7 @@ def create_user(username,
         print(e)
 
 
+
 # FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
 def username_exists(username, graph):
     cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.username",username1=username)
@@ -79,6 +80,7 @@ def username_exists(username, graph):
         return True
     except Exception:
         return False
+
 
 
 # FUNCION PARA HACER UN INICIO DE SESION
@@ -93,21 +95,65 @@ def login_user(username, password, graph):
             RETURN n
             """, username1=username)
             logedin = cursor.data()[0]
-            return logedin
+            return True, logedin
+    return False
+
+
+
+# FUNCION PARA VERIFICAR SI UNA MASCOTA YA EXISTE
+def username_exists(petusername, graph):
+    cursor = graph.run("MATCH (p:Mascota {username: $username1}) RETURN p.username",username1=petusername)
+    try:
+        cursor.data()[0].get('p.username')
+        return True
+    except Exception:
+        return False
+
+
 
 # FUNCION PARA CREAR UNA NUEVA MASCOTA
-def create_pet(username, 
-                especie, 
-                edad, 
-                foto, 
-                independencia, 
-                tamano, 
-                requiere_entrenamiento, 
-                entrenada, 
-                caracter, 
-                condiciones, 
-                contacto):
-    pass
+def create_pet(username,
+                especie,
+                edad,
+                independencia,
+                tamano,
+                requiere_entrenamiento,
+                entrenada,
+                caracter,
+                condiciones,
+                telefono,
+                graph):
+    try:
+        graph.run("""
+        CREATE (p:Mascota{username:$username1,
+        especie:$especie1,
+        edad:toInteger($edad1),
+        independencia:toInteger($independencia1),
+        tamano:$tamano1,
+        telefono:$telefono1,
+        requiere_entrenamiento1=requiere_entrenamiento,
+        entrenada1=entrenada,
+        caracter1=caracter,
+        condiciones1=condiciones,
+        adoptada:FALSE})
+        """,
+        username1=username,
+        especie1=especie,
+        edad1=edad,
+        independencia1=independencia,
+        tamano1=tamano,
+        requiere_entrenamiento1=requiere_entrenamiento,
+        entrenada1=entrenada,
+        caracter1=caracter,
+        condiciones1=condiciones,
+        telefono1=telefono,
+        )
+        print('\nUsuario creado\n')
+    except Exception as e:
+        print('\nError al crear este usuario\n')
+        print(e)
+
+
 
 # FUNCION PARA HACER LA RECOMENDACION
 def search_ideal_pet():
@@ -117,27 +163,6 @@ def search_ideal_pet():
 
 
 
-def pruebas(minombre, graph):
-    try:
-        graph.run("""
-        CREATE (p:Persona{nombre:$name, 
-        edad:20, 
-        disponibilidadTiempo:6, 
-        personalidad:"introvertido", 
-        alergias:"perros", 
-        estiloDeVida:"Casa",
-        experiencia:4,
-        presupuesto: 10,
-        tipoDeVivienda:"Apartamento", 
-        personasEnCasa:2, 
-        ninos:TRUE, 
-        telefono:12045600, 
-        username:"Ye"})
-        """, name=minombre,)
-        print('\nUsuario creado\n')
-    except Exception as e:
-        print('not ok')
-        print(e)
 
 
 
