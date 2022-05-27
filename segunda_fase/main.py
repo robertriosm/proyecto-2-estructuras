@@ -5,23 +5,22 @@ FASE 2 PROYECTO 2
 VISTA Y CONTROLADOR DEL SISTEMA DE RECOMENDACIONES
 INTEGRANTES:
 ROBERTO FRANCISCO RIOS MORALES, 20979.
-NICOLE ESCOBAR 20647
-NIKOLAS DIMITRIO BADANI GASDAGLIS 20092
-MICAELA YATAZ 18960
+NICOLE ESCOBAR, 20647.
+NIKOLAS DIMITRIO BADANI GASDAGLIS, 20092.
+MICAELA YATAZ, 18960.
 '''
 
-#from backend2 import *
+# librerias
 import datetime
-#import backend
 from py2neo import Graph
 from backend import *
 
+# iniciar algunos objetos necesarios
 op = ''
 try:
     graphy = Graph("neo4j+s://7c20a412.databases.neo4j.io:7687", auth=("neo4j", "Tg5A8nvYBvV4m85KHiQH7Jv_K44vx0A8B2lmgU6dQdk"))
 except Exception:
     print('errorcito')
-
 fechamax = datetime.datetime(2012, 1, 1)
 fechamin = datetime.datetime(1915, 1, 1)
 
@@ -33,37 +32,40 @@ while op != '3':
         '\n2) Crear una cuenta.'
         '\n3) Salir.'
     )
-    
     op = input('Ingrese su opcion:')
 
-    # hacer un login    
+    # hacer un login
     if op == '1':
         print('\nIngresar\n')
+
+        # validar el username
         user = input('Ingrese su username: ')
         while len(user) not in range(8, 21):
             print('El username debe tener entre 8 y 20 caracteres.')
             user = input('Ingrese su username: ')
 
+        # validar la contrasna
         passw =  input('Ingrese su contrasena: ')
         while len(passw) not in range(8, 21):
             print('La contrasena debe tener entre 8 y 20 caracteres.')
             passw = input('Ingrese su contrasena: ')
 
-        # falta hacer el ingreso al sistema aqui
-
+        # llamar a la db
         if login_user(user, passw):
             print('Ingreso exitoso')
 
+
+    # este es solo para pruebas!!!
     elif op == 'Ye':
         pruebas("goku", graphy)
 
+
     # crear un usuario nuevo
     elif op == '2':
-
         # validar username
         user = input('Ingrese un username: ')
-        while (len(user) not in range(8, 21)) or username_exists(user):
-            print('El username debe tener entre 8 y 20 caracteres o ya existe.')
+        while (len(user) not in range(8, 21)) or username_exists(user, graphy):
+            print('El username debe tener entre 8 y 20 caracteres.')
             user = input('Ingrese su username: ')
 
         # validar constrasena
@@ -200,6 +202,7 @@ while op != '3':
             print('El telefono debe tener entre 8 digitos numericos.')
             telefono = input('Ingrese un numero de telefono: ')
         
+        # llamar a la funcion q se comunica con la db
         create_user(user,
         passw,
         nombre,

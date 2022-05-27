@@ -96,11 +96,13 @@ def pruebas(minombre, graph):
 
 # FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
 def username_exists(username, graph):
-    graphy = Graph("neo4j+s://7c20a412.databases.neo4j.io:7687", auth=("neo4j", "Tg5A8nvYBvV4m85KHiQH7Jv_K44vx0A8B2lmgU6dQdk"))
-    graphy.ru
-    if username == 'yaexiste':
+    cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.username",username1=username)
+    try:
+        cursor.data()[0].get('p.username')
+        print('El usuario ya existe, intente con otro!')
         return True
-    return False
+    except Exception:
+        return False
 
 # FUNCION PARA HACER UN INICIO DE SESION
 def login_user(username, password):
