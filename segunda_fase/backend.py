@@ -5,13 +5,12 @@ FASE 2 PROYECTO 2
 MODELO Y BACKEND DEL SISTEMA DE RECOMENDACIONES
 INTEGRANTES:
 ROBERTO FRANCISCO RIOS MORALES, 20979.
-NICOLE ESCOBAR 20647 
-NIKOLAS DIMITRIO BADANI GASDAGLIS 20092 
-MICAELA YATAZ 18960
+NICOLE ESCOBAR, 20647.
+NIKOLAS DIMITRIO BADANI GASDAGLIS, 20092.
+MICAELA YATAZ, 18960.
 '''
 
 from py2neo import Graph
-#from neo4j import Driver, GraphDatabase
 
 # FUNCIONES PARA CONECTARSE A NEO4J
 # FUNCION PARA CREAR UN NUEVO USUARIO
@@ -29,81 +28,83 @@ def create_user(username,
                 presupuesto,
                 tipo_vivienda,
                 tiene_jardin,
-                telefono):
-    
-    pass
-
-def mytest(graph):
-    print('Ye llego')
+                telefono,
+                graph):
     try:
         graph.run("""
-        CREATE (p:Persona{nombre:"Roberto Rios", 
+        CREATE (p:Persona{username:$username1,
+        password:$password1,
+        nombre:$nombre1, 
+        apellido:$apellido1,
+        fecha_nacimiento:date($fecha_nacimiento1),
+        disponibilidad:toInteger($disponibilidad1),
+        personalidad:$personalidad1,
+        alergia:$alergia1,
+        personas_en_casa:toInteger($personas_en_casa1),
+        mascotas_antes:toBoolean($mascotas_antes1),
+        ninos:toBoolean($ninos1),
+        presupuesto:toFloat($presupuesto1),
+        tipo_vivienda:$tipo_vivienda1,
+        tiene_jardin:toBoolean($tiene_jardin1),
+        telefono:$telefono1,
+        loged:FALSE})
+        """,
+        username1=username,
+        password1=password,
+        nombre1=nombre, 
+        apellido1=apellido,
+        fecha_nacimiento1=fecha_nacimiento,
+        disponibilidad1=disponibilidad,
+        personalidad1=personalidad,
+        alergia1=alergia,
+        personas_en_casa1=personas_en_casa,
+        mascotas_antes1=mascotas_antes,
+        ninos1=ninos,
+        presupuesto1=presupuesto,
+        tipo_vivienda1=tipo_vivienda,
+        tiene_jardin1=tiene_jardin,
+        telefono1=telefono,
+        )
+        print('\nUsuario creado\n')
+    except Exception as e:
+        print('\nError al crear este usuario\n')
+        print(e)
+
+
+
+def pruebas(minombre, graph):
+    try:
+        graph.run("""
+        CREATE (p:Persona{nombre:$name, 
         edad:20, 
         disponibilidadTiempo:6, 
         personalidad:"introvertido", 
-        alergias:"no", 
-        estiloDeVida:"Casa", 
-        experiencia:3, 
-        presupuesto: 6, 
+        alergias:"perros", 
+        estiloDeVida:"Casa",
+        experiencia:4,
+        presupuesto: 10,
         tipoDeVivienda:"Apartamento", 
-        personasEnCasa:4, 
+        personasEnCasa:2, 
         ninos:TRUE, 
-        telefono:12345600, 
-        username:"robertoriosYe2"})
-        """)
-        print('ok')
+        telefono:12045600, 
+        username:"Ye"})
+        """, name=minombre,)
+        print('\nUsuario creado\n')
     except Exception as e:
         print('not ok')
         print(e)
-    
-
-    # myuri = "bolt://localhost:7687"
-    #driver = GraphDatabase.driver(uri=myuri, auth=("neo4j", "passwordNeo4j"))
-
-
-    # with driver.session() as session:
-    #     session.run("""
-    #     CREATE (p:Persona{nombre:"Roberto Rios", 
-    #     edad:20, 
-    #     disponibilidadTiempo:6, 
-    #     personalidad:"introvertido", 
-    #     alergias:"no", 
-    #     estiloDeVida:"Casa", 
-    #     experiencia:3, 
-    #     presupuesto: 6, 
-    #     tipoDeVivienda:"Apartamento", 
-    #     personasEnCasa:4, 
-    #     ninos:TRUE, 
-    #     telefono:12345600, 
-    #     username:"robertoriosYe2"})
-    #     """)
-
-        # print(username + '\n' +
-        #         password + '\n' +
-        #         nombre + '\n' +
-        #         apellido + '\n' +
-        #         fecha_nacimiento + '\n' +
-        #         disponibilidad + '\n' +
-        #         personalidad + '\n' +
-        #         alergia + '\n' +
-        #         personas_en_casa + '\n' +
-        #         mascotas_antes + '\n' +
-        #         ninos + '\n' +
-        #         presupuesto + '\n' +
-        #         tipo_vivienda + '\n' +
-        #         tiene_jardin + '\n' +
-        #         telefono)
 
 # FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
-def username_exists(username):
-    # esto solo simula la verificacion, se debe hacer una verificacion real
+def username_exists(username, graph):
+    graphy = Graph("neo4j+s://7c20a412.databases.neo4j.io:7687", auth=("neo4j", "Tg5A8nvYBvV4m85KHiQH7Jv_K44vx0A8B2lmgU6dQdk"))
+    graphy.ru
     if username == 'yaexiste':
         return True
     return False
 
 # FUNCION PARA HACER UN INICIO DE SESION
 def login_user(username, password):
-    # esto solo simula la verificacion, se debe hacer una verificacion real
+    graphy = Graph("neo4j+s://7c20a412.databases.neo4j.io:7687", auth=("neo4j", "Tg5A8nvYBvV4m85KHiQH7Jv_K44vx0A8B2lmgU6dQdk"))
     if username == 'yaexiste' and password == '12345678':
         return True
     print(username + '' + password)
@@ -125,6 +126,21 @@ def create_pet(username,
 # FUNCION PARA HACER LA RECOMENDACION
 def search_ideal_pet():
     pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 '''
 UNIVERSIDAD DEL VALLE DE GUATEMALA
 ALGORITMOS Y ESTRUCTURAS DE DATOS
@@ -136,16 +152,16 @@ NICOLE ESCOBAR 20647
 NIKOLAS DIMITRIO BADANI GASDAGLIS 20092
 MICAELA YATAZ 18960
 pongan sus nombres aqui xd
-'''
-from py2neo.ogm import *
-from py2neo import *
-import numpy as np
-import pandas as pd
-from py2neo import Graph, Node, Relationship, NodeMatcher
 
-driver = Graph("bolt://localhost:7687", auth=("neo4j","hola"))
-matcher = NodeMatcher(driver)
-data = pd.read_csv('Mascotas.csv', header = 0)
+# from py2neo.ogm import *
+# from py2neo import *
+# import numpy as np
+# import pandas as pd
+# from py2neo import Graph, Node, Relationship, NodeMatcher
+
+#driver = Graph("bolt://localhost:7687", auth=("neo4j","hola"))
+#matcher = NodeMatcher(driver)
+#data = pd.read_csv('Mascotas.csv', header = 0)
 
 def dataBase():
     with open('Mascotas.csv') as csv_file:
@@ -233,3 +249,4 @@ def create_pet(username,
 # FUNCION PARA HACER LA RECOMENDACION
 def search_ideal_pet():
     pass
+'''
