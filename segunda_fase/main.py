@@ -11,11 +11,14 @@ MICAELA YATAZ 18960
 pongan sus nombres aqui xd
 '''
 
-from sympy import per
-from backend import *
+#from backend2 import *
 import datetime
+#import backend
+from backend import mytest
+from py2neo import Graph
 
 op = ''
+graphy = Graph("neo4j+s://7c20a412.databases.neo4j.io:7687", auth=("neo4j", "Tg5A8nvYBvV4m85KHiQH7Jv_K44vx0A8B2lmgU6dQdk"))
 
 # MENU
 while op != '3':
@@ -45,6 +48,9 @@ while op != '3':
 
         if login_user(user, passw):
             print('Ingreso exitoso')
+
+    elif op == 'Ye':
+        mytest(graph=graphy)
 
     # crear un usuario nuevo
     elif op == '2':

@@ -8,8 +8,10 @@ ROBERTO FRANCISCO RIOS MORALES, 20979.
 NICOLE ESCOBAR 20647 
 NIKOLAS DIMITRIO BADANI GASDAGLIS 20092 
 MICAELA YATAZ 18960
-pongan sus nombres aqui xd
 '''
+
+from py2neo import Graph
+#from neo4j import Driver, GraphDatabase
 
 # FUNCIONES PARA CONECTARSE A NEO4J
 # FUNCION PARA CREAR UN NUEVO USUARIO
@@ -28,22 +30,69 @@ def create_user(username,
                 tipo_vivienda,
                 tiene_jardin,
                 telefono):
+    
+    pass
 
-        print(username + '\n' +
-                password + '\n' +
-                nombre + '\n' +
-                apellido + '\n' +
-                fecha_nacimiento + '\n' +
-                disponibilidad + '\n' +
-                personalidad + '\n' +
-                alergia + '\n' +
-                personas_en_casa + '\n' +
-                mascotas_antes + '\n' +
-                ninos + '\n' +
-                presupuesto + '\n' +
-                tipo_vivienda + '\n' +
-                tiene_jardin + '\n' +
-                telefono)
+def mytest(graph):
+    print('Ye llego')
+    try:
+        graph.run("""
+        CREATE (p:Persona{nombre:"Roberto Rios", 
+        edad:20, 
+        disponibilidadTiempo:6, 
+        personalidad:"introvertido", 
+        alergias:"no", 
+        estiloDeVida:"Casa", 
+        experiencia:3, 
+        presupuesto: 6, 
+        tipoDeVivienda:"Apartamento", 
+        personasEnCasa:4, 
+        ninos:TRUE, 
+        telefono:12345600, 
+        username:"robertoriosYe2"})
+        """)
+        print('ok')
+    except Exception as e:
+        print('not ok')
+        print(e)
+    
+
+    # myuri = "bolt://localhost:7687"
+    #driver = GraphDatabase.driver(uri=myuri, auth=("neo4j", "passwordNeo4j"))
+
+
+    # with driver.session() as session:
+    #     session.run("""
+    #     CREATE (p:Persona{nombre:"Roberto Rios", 
+    #     edad:20, 
+    #     disponibilidadTiempo:6, 
+    #     personalidad:"introvertido", 
+    #     alergias:"no", 
+    #     estiloDeVida:"Casa", 
+    #     experiencia:3, 
+    #     presupuesto: 6, 
+    #     tipoDeVivienda:"Apartamento", 
+    #     personasEnCasa:4, 
+    #     ninos:TRUE, 
+    #     telefono:12345600, 
+    #     username:"robertoriosYe2"})
+    #     """)
+
+        # print(username + '\n' +
+        #         password + '\n' +
+        #         nombre + '\n' +
+        #         apellido + '\n' +
+        #         fecha_nacimiento + '\n' +
+        #         disponibilidad + '\n' +
+        #         personalidad + '\n' +
+        #         alergia + '\n' +
+        #         personas_en_casa + '\n' +
+        #         mascotas_antes + '\n' +
+        #         ninos + '\n' +
+        #         presupuesto + '\n' +
+        #         tipo_vivienda + '\n' +
+        #         tiene_jardin + '\n' +
+        #         telefono)
 
 # FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
 def username_exists(username):
