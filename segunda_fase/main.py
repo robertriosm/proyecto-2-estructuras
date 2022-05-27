@@ -51,9 +51,10 @@ while op != '3':
             print('La contrasena debe tener entre 8 y 20 caracteres.')
             passw = input('Ingrese su contrasena: ')
 
-        # llamar a la db
+        # llamar a la db y hacer login
         login_user(user, passw, graphy)
         print(f'\nIngreso exitoso, bienvenido, {user}\n')
+
 
 
 

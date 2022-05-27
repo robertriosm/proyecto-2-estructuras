@@ -89,11 +89,10 @@ def login_user(username, password, graph):
         if verify == password:
             cursor = graph.run("""
             MATCH (n:Persona {username: $username1})
-            SET n.loged = NOT n.loged
+            SET n.loged = true
             RETURN n
             """, username1=username)
             logedin = cursor.data()[0]
-            print(logedin)
             return logedin
 
 # FUNCION PARA CREAR UNA NUEVA MASCOTA
