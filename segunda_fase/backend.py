@@ -159,7 +159,17 @@ def create_pet(username,
 def search_ideal_pet():
     pass
 
-
+# FUNCION PARA ELIMINAR A UNA MASCOTA ADOPTADA
+def deleteMascota():
+    apol = True
+    while(apol):
+        try:
+            nombreMascota = input("Ingrese el nombre de la mascota: ")
+            verificar = session.run("MATCH (n {Nombre:" + nombreMascota + "})" "DETACH DELETE n")
+            print("Se ha eliminado a la mascota del registro")
+            apol = False
+        except:
+            print("Error. Inténtelo de nuevo")
 
 
 
