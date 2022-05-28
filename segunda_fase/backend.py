@@ -12,24 +12,25 @@ MICAELA YATAZ, 18960.
 
 from py2neo import Graph
 
-# FUNCIONES PARA CONECTARSE A NEO4J
-# FUNCION PARA CREAR UN NUEVO USUARIO
-def create_user(username,
-                password,
-                nombre,
-                apellido,
-                fecha_nacimiento,
-                disponibilidad,
-                personalidad,
-                alergia,
-                personas_en_casa,
-                mascotas_antes,
-                ninos,
-                presupuesto,
-                tipo_vivienda,
-                tiene_jardin,
-                telefono,
-                graph):
+# --------- FUNCIONES PARA CONECTARSE A NEO4J ---------
+
+# FUNCION PARA CREAR UN NUEVO USUARIO EN LA BASE DE DATOS
+def create_user(username: str,
+                password: str,
+                nombre: str,
+                apellido: str,
+                fecha_nacimiento: str,
+                disponibilidad: str,
+                personalidad: str,
+                alergia: str,
+                personas_en_casa: str,
+                mascotas_antes: bool,
+                ninos: bool,
+                presupuesto: float,
+                tipo_vivienda: bool,
+                tiene_jardin: bool,
+                telefono: str,
+                graph: Graph):
     try:
         graph.run("""
         CREATE (p:Persona{username:$username1,
@@ -72,8 +73,8 @@ def create_user(username,
 
 
 
-# FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
-def username_exists(username, graph):
+# FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE EN LA DB
+def username_exists(username: str, graph: Graph):
     cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.username",username1=username)
     try:
         cursor.data()[0].get('p.username')
@@ -84,7 +85,7 @@ def username_exists(username, graph):
 
 
 # FUNCION PARA HACER UN INICIO DE SESION
-def login_user(username, password, graph):
+def login_user(username: str, password: str, graph: Graph):
     if username_exists(username, graph):
         cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.password", username1=username)
         verify = cursor.data()[0].get('p.password')
@@ -96,48 +97,61 @@ def login_user(username, password, graph):
             """, username1=username)
             logedin = cursor.data()[0]
             return True, logedin
-    return False
+    return False, 0
 
 
 
 # FUNCION PARA VERIFICAR SI UNA MASCOTA YA EXISTE
-def username_exists(petusername, graph):
-    cursor = graph.run("MATCH (p:Mascota {username: $username1}) RETURN p.username",username1=petusername)
+def pet_username_exists(petusername: str, graph: Graph):
+    cursor = graph.run("MATCH (m:Mascota {username: $username1}) RETURN m.petusername",username1=petusername)
     try:
-        cursor.data()[0].get('p.username')
+        cursor.data()[0].get('m.username')
         return True
     except Exception:
         return False
 
 
 
+# PARA HACER LOGOUT
+def logoutuser(user: dict, graph: Graph):
+    username = user.get('username')
+    try:
+        cursor = graph.run("""
+            MATCH (n:Persona {username: $username1})
+            SET n.loged = false
+            RETURN n
+            """, username1=username)
+    except Exception as e:
+        print(e)
+        print('errorcito')
+
+
+
 # FUNCION PARA CREAR UNA NUEVA MASCOTA
-def create_pet(username,
-                especie,
-                edad,
-                independencia,
-                tamano,
-                requiere_entrenamiento,
-                entrenada,
-                caracter,
-                condiciones,
-                telefono,
-                graph):
+def create_pet(petusername: str,
+                especie: str,
+                edad: int,
+                independencia: int,
+                tamano: str,
+                requiere_entrenamiento: bool,
+                entrenada: bool,
+                caracter: str,
+                condiciones: str,
+                graph: Graph):
     try:
         graph.run("""
-        CREATE (p:Mascota{username:$username1,
+        CREATE (m:Mascota{petusername:$petusername1,
         especie:$especie1,
         edad:toInteger($edad1),
         independencia:toInteger($independencia1),
         tamano:$tamano1,
-        telefono:$telefono1,
         requiere_entrenamiento1=requiere_entrenamiento,
         entrenada1=entrenada,
         caracter1=caracter,
         condiciones1=condiciones,
         adoptada:FALSE})
         """,
-        username1=username,
+        petusername1=petusername,
         especie1=especie,
         edad1=edad,
         independencia1=independencia,
@@ -146,30 +160,32 @@ def create_pet(username,
         entrenada1=entrenada,
         caracter1=caracter,
         condiciones1=condiciones,
-        telefono1=telefono,
         )
-        print('\nUsuario creado\n')
+        print('\nMascota registrada\n')
     except Exception as e:
         print('\nError al crear este usuario\n')
         print(e)
 
 
 
-# FUNCION PARA HACER LA RECOMENDACION
-def search_ideal_pet():
-    pass
+# FUNCION CON EL ALGORITMO PARA HACER LA RECOMENDACION
+def search_ideal_pet(user: dict):
+    return {}
 
-# FUNCION PARA ELIMINAR A UNA MASCOTA ADOPTADA
-def deleteMascota():
-    apol = True
-    while(apol):
-        try:
-            nombreMascota = input("Ingrese el nombre de la mascota: ")
-            verificar = session.run("MATCH (n {Nombre:" + nombreMascota + "})" "DETACH DELETE n")
-            print("Se ha eliminado a la mascota del registro")
-            apol = False
-        except:
-            print("Error. Inténtelo de nuevo")
+
+
+# FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA ADOPTADA
+def disable_pet(petusername: str, graph: Graph):
+    try:
+        graph.run("""
+        MATCH (n:Mascota {petusername:$petusername})
+        SET n.adoptada = true
+        RETURN n
+        """)
+        print("Se ha eliminado a la mascota del registro")
+    except Exception as e:
+        print(e)
+        print("Errorcito")
 
 
 
