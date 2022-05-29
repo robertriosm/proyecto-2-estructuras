@@ -243,8 +243,9 @@ while op != '3':
         telefono,
         graph=graphy)
 
+    # registrar una mascota
     elif op == '3':
-        # validar username
+        # validar pet-username
         pet_user = input('Ingrese un pet-username para identificar a la mascota: ')
         while (len(pet_user) not in range(8, 21)) or pet_username_exists(pet_user, graphy):
             print('El pet_username debe tener entre 8 y 20 caracteres, o ya existe, pruebe de nuevo.')
@@ -317,6 +318,20 @@ while op != '3':
             entrenada = True
         else:
             entrenada = False
+        
+        # verificar caracter, 1=Activa, 2=Tranquila
+        caracter = input('Describiria a la mascota como activa o tranquila?'
+        '\n[1] Activa'
+        '\n[2] Tranquila'
+        '\nSu opcion: '
+        )
+        while caracter != '1' and caracter != '2':
+            print('No igreso una opcion correcta, por favor intente de nuevo.')
+            caracter = input('Describiria a la mascota como activa o tranquila? '
+            '\n[1] Activa'
+            '\n[2] Tranquila'
+            '\nSu opcion: '
+            )
 
         # validar si la mascota padece de alguna condicion
         print('Seleccione una opcion, ¿la mascota padece de alguna de las siguientes condiciones?'
