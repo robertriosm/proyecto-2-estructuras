@@ -10,12 +10,12 @@ NIKOLAS DIMITRIO BADANI GASDAGLIS, 20092.
 MICAELA YATAZ, 18960.
 '''
 
-from matplotlib.style import available
+# unico modulo usado de py2neo
 from py2neo import Graph
 
-# --------- FUNCIONES PARA CONECTARSE A NEO4J ---------
+# ------------------------------------ FUNCIONES PARA CONECTARSE A NEO4J ------------------------------------
 
-# FUNCION PARA CREAR UN NUEVO USUARIO EN LA BASE DE DATOS
+# ------------------------------------ FUNCION PARA CREAR UN NUEVO USUARIO EN LA BASE DE DATOS ------------------------------------
 def create_user(username: str,
                 password: str,
                 nombre: str,
@@ -56,7 +56,7 @@ def create_user(username: str,
         telefono1=telefono,
         )
 
-        # asignarle disponibilidad
+        # asignarle disponibilidad ------------------------------------
         if disponibilidad <= 2:
             dispo = 'Muy poca disponibilidad'
         elif disponibilidad in range(3, 5):
@@ -77,7 +77,7 @@ def create_user(username: str,
             username1=username, dispo1=dispo
         )
 
-        # asignarle personalidad
+        # asignarle personalidad ------------------------------------
         if personalidad <= 2:
             perso = 'Muy sedentario'
         elif personalidad in range(3, 5):
@@ -98,7 +98,7 @@ def create_user(username: str,
             username1=username, perso1=perso
         )
 
-        # asignarle alergias
+        # asignarle alergias ------------------------------------
         if alergia == '1':
             alergia = 'pelo de gato'
         elif alergia == '2':
@@ -118,7 +118,7 @@ def create_user(username: str,
             username1=username, alergia1=alergia
         )
 
-        # asignarle casa  
+        # asignarle casa ------------------------------------
         if tipo_vivienda == '1':
             tipo_vivienda = 'Grande'
         else:
@@ -144,7 +144,7 @@ def create_user(username: str,
 
 
 
-# FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE EN LA DB
+# ------------------------------------ FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE EN LA DB ------------------------------------
 def username_exists(username: str, graph: Graph):
     cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.username",username1=username)
     try:
@@ -155,7 +155,7 @@ def username_exists(username: str, graph: Graph):
 
 
 
-# FUNCION PARA HACER UN INICIO DE SESION
+# ------------------------------------ FUNCION PARA HACER UN INICIO DE SESION ------------------------------------
 def login_user(username: str, password: str, graph: Graph):
     if username_exists(username, graph):
         cursor = graph.run("MATCH (p:Persona {username: $username1}) RETURN p.password", username1=username)
@@ -172,7 +172,7 @@ def login_user(username: str, password: str, graph: Graph):
 
 
 
-# FUNCION PARA VERIFICAR SI UNA MASCOTA YA EXISTE
+# ------------------------------------ FUNCION PARA VERIFICAR SI UNA MASCOTA YA EXISTE ------------------------------------
 def pet_username_exists(petusername: str, graph: Graph):
     cursor = graph.run("MATCH (m:Mascota {username: $username1}) RETURN m.petusername",username1=petusername)
     try:
@@ -183,7 +183,7 @@ def pet_username_exists(petusername: str, graph: Graph):
 
 
 
-# PARA HACER LOGOUT
+# ------------------------------------ PARA HACER LOGOUT ------------------------------------
 def logoutuser(user: dict, graph: Graph):
     username = user.get('username')
     try:
@@ -198,7 +198,7 @@ def logoutuser(user: dict, graph: Graph):
 
 
 
-# FUNCION PARA CREAR UNA NUEVA MASCOTA
+# ------------------------------------ FUNCION PARA CREAR UNA NUEVA MASCOTA ------------------------------------
 def create_pet(petusername: str,
                 especie: str,
                 edad: int,
@@ -221,7 +221,7 @@ def create_pet(petusername: str,
         independencia1=independencia,
         )
 
-        # asignarle especie
+        # asignarle especie ------------------------------------
         if especie == '1':
             especie = 'Perro'
         else:
@@ -243,7 +243,7 @@ def create_pet(petusername: str,
             petusername1=petusername, especie1=especie, tipo=tamano
         )
 
-        # asignarle require_entrenamiento, entrenada y caracter
+        # asignarle require_entrenamiento, entrenada y caracter ------------------------------------
         requiere_entrenamiento = str(requiere_entrenamiento)
         entrenada = str(entrenada)
 
@@ -261,7 +261,7 @@ def create_pet(petusername: str,
             petusername1=petusername, caracter1=caracter, entrenada1=entrenada, requiere=requiere_entrenamiento
         )
 
-        # asignarle condiciones
+        # asignarle condiciones ------------------------------------
         if condiciones == '1':
             condicion = 'Lesion'
         elif condiciones == '2':
@@ -287,13 +287,13 @@ def create_pet(petusername: str,
 
 
 
-# FUNCION CON EL ALGORITMO PARA HACER LA RECOMENDACION
+# ------------------------------------ FUNCION CON EL ALGORITMO PARA HACER LA RECOMENDACION ------------------------------------
 def search_ideal_pet(user: dict):
     return [{}]
 
 
 
-# FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA QUE HA SIDO ADOPTADA
+# ------------------------------------ FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA QUE HA SIDO ADOPTADA ------------------------------------
 def disable_pet(user: dict, petusername: str, graph: Graph):
     cursor = graph.run('MATCH (n:Mascota {petusername:$petusername1}), RETURN n;', petusername1=petusername)
     adoptada = cursor.data()[0].get('n.adoptada')

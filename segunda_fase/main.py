@@ -10,12 +10,12 @@ NIKOLAS DIMITRIO BADANI GASDAGLIS, 20092.
 MICAELA YATAZ, 18960.
 '''
 
-# librerias y modulos
+# ------------------------------------ librerias y modulos ------------------------------------
 import datetime
 from py2neo import Graph
 from backend import *
 
-# iniciar algunos db y algunos parametros de validacion
+# ------------------------------------ iniciar conexion a db y algunos parametros de validacion ------------------------------------
 op = ''
 try:
     graphy = Graph("neo4j+s://7c20a412.databases.neo4j.io:7687", auth=("neo4j", "Tg5A8nvYBvV4m85KHiQH7Jv_K44vx0A8B2lmgU6dQdk"))
@@ -24,7 +24,7 @@ except Exception:
 fechamax = datetime.datetime(2012, 1, 1)
 fechamin = datetime.datetime(1915, 1, 1)
 
-# MENU
+# ------------------------------------ MENU PRINCIPAL ------------------------------------
 while op != '3':
     print(
         '\nBIENVENIDO A RECOMENDACIONES DE MASCOTAS'
@@ -36,80 +36,85 @@ while op != '3':
     op = input('Ingrese su opcion:')
 
 
-    # hacer un login
+    # ------------------------------------ hacer un login ------------------------------------
     if op == '1':
         print('\nIngresar\n')
 
-        # validar el username
+        # validar el username ------------------------------------
         user = input('Ingrese su username: ')
         while len(user) not in range(8, 21):
             print('El username debe tener entre 8 y 20 caracteres.')
             user = input('Ingrese su username: ')
 
-        # validar la contrasena
+        # validar la contrasena ------------------------------------
         passw =  input('Ingrese su contrasena: ')
         while len(passw) not in range(8, 21):
             print('La contrasena debe tener entre 8 y 20 caracteres.')
             passw = input('Ingrese su contrasena: ')
 
-        # llamar a la db y hacer login
+        # llamar a la db y hacer login ------------------------------------
         is_loged, loged_user = login_user(user, passw, graphy)
         print(f'\nIngreso exitoso, Bienvenido, {user}.')
 
-        # el usuario logeado ve esto:
+        # el usuario logeado ve esto: ------------------------------------
         while is_loged:
             print('\nMenu del centro de adopcion\n'
-            '[1] Buscar mascota recomendadas.\n'
+            '[1] Buscar mascotas recomendadas.\n'
             '[2] Adoptar una mascota.\n'
             '[3] Logout.'
             )
             op2 = input('Ingrese una opcion: ')
 
-            # llamar al algoritmo de recomendacion
+            # llamar al algoritmo de recomendacion ------------------------------------
             if op2 == '1':
                 print('\n A continuacion se muestran las mascotas que coinciden con usted:\n')
                 for m in search_ideal_pet(loged_user):
                     print(m)
 
-            # adoptar una mascota
+            # adoptar una mascota ------------------------------------
             elif op2 == '2':
-                pass 
+                # validar pet-username ------------------------------------
+                pet = input('Ingrese el pet-username de la mascota que le gusto: ')
+                while (len(pet) not in range(8, 21)) or pet_username_exists(pet, graphy):
+                    print('El pet_username debe tener entre 8 y 20 caracteres, o ya existe, pruebe de nuevo.')
+                    pet = input('Ingrese el pet-username de la mascota que le gusto: ')
+                
+                # relacionar a la mascota con quien la adopto y deshabilitarla ------------------------------------
+                disable_pet(loged_user, pet, graphy)
             
-            # salir del centro de adopcion, no del programa
+            # salir del centro de adopcion, no del programa ------------------------------------
             elif op2 == '3':
                 print('\nAdios, vuelva luego.\n')
                 logoutuser(loged_user)
-                
-        # --------------------------------------
 
 
-    # crear un usuario nuevo
+    # ------------------------------------ crear un usuario nuevo ------------------------------------
     elif op == '2':
-        # validar username
+        # validar username ------------------------------------
         user = input('Ingrese un username: ')
         while (len(user) not in range(8, 21)) or username_exists(user, graphy):
             print('El username debe tener entre 8 y 20 caracteres, o ya existe, pruebe de nuevo.')
             user = input('Ingrese su username: ')
 
-        # validar constrasena
+        # validar constrasena ------------------------------------
         passw =  input('Ingrese su contrasena: ')
         while len(passw) not in range(8, 21):
             print('La contrasena debe tener entre 8 y 20 caracteres.')
             passw = input('Ingrese su contrasena: ')
 
-        # validar nombre
+        # validar nombre ------------------------------------
         nombre =  input('Ingrese su nombre: ')
         while len(nombre) not in range(2, 31):
             print('Su nombre debe tener entre 2 y 30 caracteres.')
             nombre = input('Ingrese su nombre: ')
 
-        # validar apellido
+        # validar apellido ------------------------------------
         apellido =  input('Ingrese su apellido: ')
         while len(apellido) not in range(2, 31):
             print('Su apellido debe tener entre 2 y 30 caracteres.')
             apellido = input('Ingrese su apellido: ')
         
-        # validar fecha de nacimiento
+        # validar fecha de nacimiento ------------------------------------
         ye = True
         while ye:
             try:
@@ -125,7 +130,7 @@ while op != '3':
                 print('Error al ingresar la fecha, por favor intente de nuevo.')
         fecha = str(fecha)[:10]
         
-        # validar disponibilidad de tiempo 1-10
+        # validar disponibilidad de tiempo 1-10 ------------------------------------
         ye = True
         while ye:
             dispo = input('De uno a diez, indique cual es su disponibilidad de tiempo para una mascota: ')
@@ -138,7 +143,7 @@ while op != '3':
             except Exception as e:
                 print('El valor ingresado no es un numero entero, por favor intente de nuevo.')
 
-        # validar personalidad
+        # validar personalidad ------------------------------------
         print('En una escala donde 1 es extremadamente sedentario y 10 es extremadamente activo,')
         ye = True
         while ye:
@@ -152,14 +157,14 @@ while op != '3':
             except Exception as e:
                 print('El valor ingresado no es un numero entero, por favor intente de nuevo.')
         
-        # validar alergias, 1=pelo gato, 2=pelo perro, 3=pelo ambos, 4=ninguno
+        # validar alergias, 1=pelo gato, 2=pelo perro, 3=pelo ambos, 4=ninguno ------------------------------------
         print('Seleccione las opciones si padece de alguna:\n[1] Alergia al pelo de gato\n[2] Alergia al pelo de perro\n[3] Alergia a ambos\n[4] Ninguna')
         alergia_pelo = input('Su respuesta: ')
         while alergia_pelo != '1' and alergia_pelo != '2' and alergia_pelo != '3' and alergia_pelo != '4': 
             print('Ingreso no valido, por favor elija una opcion.')
             alergia_pelo = input('Su respuesta: ')
 
-        # validar personas en casa, entre 1-20
+        # validar personas en casa, entre 1-20 ------------------------------------
         ye = True
         while ye:
             try:
@@ -171,7 +176,7 @@ while op != '3':
             except Exception as e:
                 print('Ingreso no valido')
         
-        # validar si ha tenido mascotas antes, true false
+        # validar si ha tenido mascotas antes, true false ------------------------------------
         mascotas_a = input('Ha tenido mascotas antes? (escriba si o no): ').lower()
         while mascotas_a != 'si' and mascotas_a != 'no':
             print('Ingreso no valido')
@@ -181,7 +186,7 @@ while op != '3':
         else:
             mascotas_antes = False
         
-        # verificar si hay ninos en casa, true false
+        # verificar si hay ninos en casa, true false ------------------------------------
         ninos = input('hay ninos en su casa? (escriba si o no): ').lower()
         while ninos != 'si' and ninos != 'no':
             print('Ingreso no valido')
@@ -191,7 +196,7 @@ while op != '3':
         else:
             ninos_casa = False
         
-        # verificar presupuesto al mes 
+        # verificar presupuesto al mes  ------------------------------------
         ye = True
         while ye:
             try:
@@ -202,7 +207,7 @@ while op != '3':
                 print(e)
                 print('Ingreso una cantidad menor a 0 o un ingreso no valido')
         
-        # verificar vivienda, 1=grande, 2=peque
+        # verificar vivienda, 1=grande, 2=peque ------------------------------------
         vivienda = input('Como considera su vivienda?'
         '\n[1] Grande'
         '\n[2] Pequena'
@@ -216,7 +221,7 @@ while op != '3':
             '\nSu opcion:'
             )
         
-        # verificar si la casa tiene jardin, true false
+        # verificar si la casa tiene jardin, true false ------------------------------------
         jardin = input('hay jardin en su casa? (escriba si o no): ').lower()
         while jardin != 'si' and jardin != 'no': 
             print('Ingreso no valido')
@@ -226,13 +231,13 @@ while op != '3':
         else:
             jardin_casa = False
 
-        # verificar el numero de telefono
+        # verificar el numero de telefono ------------------------------------
         telefono = input('Ingrese un numero de telefono: ')
         while len(telefono) != 8 and not telefono.isalnum():
             print('El telefono debe tener entre 8 digitos numericos.')
             telefono = input('Ingrese un numero de telefono: ')
         
-        # llamar a la funcion que se comunica con la db
+        # llamar a la funcion que se comunica con la db ------------------------------------
         create_user(user,
         passw,
         nombre,
@@ -250,15 +255,15 @@ while op != '3':
         telefono,
         graph=graphy)
 
-    # registrar una mascota
+    # ------------------------------------ registrar una mascota ------------------------------------
     elif op == '3':
-        # validar pet-username
+        # validar pet-username ------------------------------------
         pet_user = input('Ingrese un pet-username para identificar a la mascota: ')
         while (len(pet_user) not in range(8, 21)) or pet_username_exists(pet_user, graphy):
             print('El pet_username debe tener entre 8 y 20 caracteres, o ya existe, pruebe de nuevo.')
             pet_user = input('Ingrese un pet-username: ')
 
-        # verificar especie, 1=perro, 2=gato
+        # verificar especie, 1=perro, 2=gato ------------------------------------
         especie = input('Es un perro o un gato?'
         '\n[1] Perro'
         '\n[2] Gato'
@@ -272,7 +277,7 @@ while op != '3':
             '\nSu opcion: '
             )
 
-        # validar edad de la mascota, entre 0-20
+        # validar edad de la mascota, entre 0-20 ------------------------------------
         ye = True
         while ye:
             try:
@@ -284,7 +289,7 @@ while op != '3':
             except Exception as e:
                 print('Ingreso no valido')
 
-        # validar el nivel de independencia de la mascota, entre 1-10
+        # validar el nivel de independencia de la mascota, entre 1-10 ------------------------------------
         ye = True
         while ye:
             try:
@@ -296,7 +301,7 @@ while op != '3':
             except Exception as e:
                 print('Ingreso no valido')
 
-        # validar tamano, 1=grande, 2=mediano, 3=pequeno
+        # validar tamano, 1=grande, 2=mediano, 3=pequeno ------------------------------------
         if especie == '1':
             print('Seleccione el tamano del perro:\n[1] Grande\n[2] Mediano\n[3] Pequeno')
             tamano = input('Su respuesta: ')
@@ -306,7 +311,7 @@ while op != '3':
         else:
             tamano = '3'
         
-        # validar si la mascota requiere entrenamiento, true false
+        # validar si la mascota requiere entrenamiento, true false ------------------------------------
         requiere_e = input('La mascota requiere de algun entrenamiento? (escriba si o no): ').lower()
         while requiere_e != 'si' and requiere_e != 'no':
             print('Ingreso no valido')
@@ -316,7 +321,7 @@ while op != '3':
         else:
             requiere_e = False
         
-        # validar si la mascota esta entrenada, true false
+        # validar si la mascota esta entrenada, true false ------------------------------------
         entrenada = input('La mascota ha recibido entrenamiento? (escriba si o no): ').lower()
         while entrenada != 'si' and entrenada != 'no':
             print('Ingreso no valido')
@@ -326,7 +331,7 @@ while op != '3':
         else:
             entrenada = False
         
-        # verificar caracter, 1=Activa, 2=Tranquila
+        # verificar caracter, 1=Activa, 2=Tranquila ------------------------------------
         caracter = input('Describiria a la mascota como activa o tranquila?'
         '\n[1] Activa'
         '\n[2] Tranquila'
@@ -340,7 +345,7 @@ while op != '3':
             '\nSu opcion: '
             )
 
-        # validar si la mascota padece de alguna condicion
+        # validar si la mascota padece de alguna condicion ------------------------------------
         print('Seleccione una opcion, ¿la mascota padece de alguna de las siguientes condiciones?'
         '\n[1] Lesiones\n[2] Desnutricion\n[3] Ambas\n[4] Ninguna')
         condicion = input('Su respuesta: ')
@@ -348,9 +353,9 @@ while op != '3':
             print('Ingreso no valido, por favor elija una opcion.')
             condicion = input('Su respuesta: ')
 
-        # llamar a la funcion que se comunica con la db creando un nodo Mascota
+        # llamar a la funcion que se comunica con la db creando un nodo Mascota ------------------------------------
         create_pet(pet_user, especie, edad, indep, tamano, requiere_e, entrenada, caracter, condicion, graphy)
 
-    # salir de la aplicacion
+    # ------------------------------------ salir del programa ------------------------------------
     elif op == '4':
         print('Gracias por usar el programa, vuelva pronto!')
