@@ -134,16 +134,23 @@ while op != '3':
                 if dispo in range(1,11):
                     ye = False
                 else:
-                    print('El valor no esta entre 1 y 10')
+                    print('El valor no esta entre 1 y 10.')
             except Exception as e:
-                print('El valor ingresado no es un numero entero, por favor intente de nuevo')
+                print('El valor ingresado no es un numero entero, por favor intente de nuevo.')
 
-        # validar personalidad      1=intro, 2=extro, 3=ambos
-        print('Seleccione su personalidad entre las siguientes opciones:\n[1] Introvertido\n[2] Extrovertido\n[3] Ambos')
-        perso = input('Su respuesta: ')
-        while perso != '1' and perso != '2' and perso != '3':
-            print('No igreso una opcion correcta, por favor intente de nuevo')
-            perso = input('Su respuesta: ')
+        # validar personalidad
+        print('En una escala donde 1 es extremadamente sedentario y 10 es extremadamente activo,')
+        ye = True
+        while ye:
+            perso = input('Indique (1-10) como se clasifica: ')
+            try:
+                perso = int(perso)
+                if perso in range(1,11):
+                    ye = False
+                else:
+                    print('El valor no esta entre 1 y 10.')
+            except Exception as e:
+                print('El valor ingresado no es un numero entero, por favor intente de nuevo.')
         
         # validar alergias, 1=pelo gato, 2=pelo perro, 3=pelo ambos, 4=ninguno
         print('Seleccione las opciones si padece de alguna:\n[1] Alergia al pelo de gato\n[2] Alergia al pelo de perro\n[3] Alergia a ambos\n[4] Ninguna')

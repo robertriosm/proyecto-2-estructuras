@@ -10,6 +10,7 @@ NIKOLAS DIMITRIO BADANI GASDAGLIS, 20092.
 MICAELA YATAZ, 18960.
 '''
 
+from matplotlib.style import available
 from py2neo import Graph
 
 # --------- FUNCIONES PARA CONECTARSE A NEO4J ---------
@@ -21,13 +22,13 @@ def create_user(username: str,
                 apellido: str,
                 fecha_nacimiento: str,
                 disponibilidad: str,
-                personalidad: str,
+                personalidad: int,
                 alergia: str,
                 personas_en_casa: str,
                 mascotas_antes: bool,
                 ninos: bool,
                 presupuesto: float,
-                tipo_vivienda: bool,
+                tipo_vivienda: str,
                 tiene_jardin: bool,
                 telefono: str,
                 graph: Graph):
@@ -38,15 +39,9 @@ def create_user(username: str,
         nombre:$nombre1, 
         apellido:$apellido1,
         fecha_nacimiento:date($fecha_nacimiento1),
-        disponibilidad:toInteger($disponibilidad1),
-        personalidad:$personalidad1,
-        alergia:$alergia1,
         personas_en_casa:toInteger($personas_en_casa1),
         mascotas_antes:toBoolean($mascotas_antes1),
-        ninos:toBoolean($ninos1),
         presupuesto:toFloat($presupuesto1),
-        tipo_vivienda:$tipo_vivienda1,
-        tiene_jardin:toBoolean($tiene_jardin1),
         telefono:$telefono1,
         loged:FALSE})
         """,
@@ -55,18 +50,94 @@ def create_user(username: str,
         nombre1=nombre, 
         apellido1=apellido,
         fecha_nacimiento1=fecha_nacimiento,
-        disponibilidad1=disponibilidad,
-        personalidad1=personalidad,
-        alergia1=alergia,
         personas_en_casa1=personas_en_casa,
         mascotas_antes1=mascotas_antes,
-        ninos1=ninos,
         presupuesto1=presupuesto,
-        tipo_vivienda1=tipo_vivienda,
-        tiene_jardin1=tiene_jardin,
         telefono1=telefono,
         )
+
+        # asignarle disponibilidad
+        if disponibilidad <= 2:
+            dispo = 'Muy poca disponibilidad'
+        elif disponibilidad in range(3, 5):
+            dispo = 'Poca disponibilidad'
+        elif disponibilidad in range(5, 7):
+            dispo = 'Normal'
+        elif disponibilidad in range(7, 9):
+            dispo = 'Disponible'
+        elif disponibilidad > 8:
+            dispo='Muy disponible'
+
+        graph.run(
+            """
+            MATCH (a:Persona), (b:Disponibilidad)
+            WHERE a.username = $username1 AND b.personalidad = $perso1 
+            CREATE (a)-[r:SE_ENCUENTRA]->(b)
+            """,
+            username1=username, dispo1=dispo
+        )
+
+        # asignarle personalidad
+        if personalidad <= 2:
+            perso = 'Muy sedentario'
+        elif personalidad in range(3, 5):
+            perso = 'Sedentario'
+        elif personalidad in range(5, 7):
+            perso = 'Normal'
+        elif personalidad in range(7, 9):
+            perso = 'Activo'
+        elif personalidad > 8:
+            perso='Muy activo'
+
+        graph.run(
+            """
+            MATCH (a:Persona), (b:Personalidad)
+            WHERE a.username = $username1 AND b.personalidad = $perso1 
+            CREATE (a)-[r:ES]->(b)
+            """,
+            username1=username, perso1=perso
+        )
+
+        # asignarle alergias
+        if alergia == '1':
+            alergia = 'pelo de gato'
+        elif alergia == '2':
+            alergia = 'pelo de perro'
+        elif alergia == '3':
+            alergia = 'ambos'
+        elif alergia == '4':
+            alergia = 'ninguno'
+
+        
+        graph.run(
+            """
+            MATCH (a:Persona), (b:Alergia)
+            WHERE a.username = $username1 AND b.alergia = $alergia1
+            CREATE (a)-[r:ALERGICO_A]->(b)
+            """,
+            username1=username, alergia1=alergia
+        )
+
+        # asignarle casa  
+        if tipo_vivienda == '1':
+            tipo_vivienda = 'Grande'
+        else:
+            tipo_vivienda = 'Pequena'
+        
+        ninos = str(ninos)
+        tiene_jardin = str(tiene_jardin)
+        
+        graph.run(
+            """
+            MATCH (a:Persona), (b:Casa)
+            WHERE a.username = $username1 AND b.tamano = $tipo AND b.tiene_jardin = toBoolean($jardin) AND b.tiene_ninos = toBoolean($ninos1) 
+            CREATE (a)-[r:VIVE_EN]->(b)
+            """,
+            username1=username, tipo=tipo_vivienda, ninos1=ninos, jardin = tiene_jardin
+        )
+
         print('\nUsuario creado\n')
+        
     except Exception as e:
         print('\nError al crear este usuario\n')
         print(e)
@@ -97,7 +168,7 @@ def login_user(username: str, password: str, graph: Graph):
             """, username1=username)
             logedin = cursor.data()[0]
             return True, logedin
-    return False, 0
+    return False, {}
 
 
 
@@ -116,7 +187,7 @@ def pet_username_exists(petusername: str, graph: Graph):
 def logoutuser(user: dict, graph: Graph):
     username = user.get('username')
     try:
-        cursor = graph.run("""
+        graph.run("""
             MATCH (n:Persona {username: $username1})
             SET n.loged = false
             RETURN n
@@ -141,172 +212,102 @@ def create_pet(petusername: str,
     try:
         graph.run("""
         CREATE (m:Mascota{petusername:$petusername1,
-        especie:$especie1,
         edad:toInteger($edad1),
         independencia:toInteger($independencia1),
-        tamano:$tamano1,
-        requiere_entrenamiento1=requiere_entrenamiento,
-        entrenada1=entrenada,
-        caracter1=caracter,
-        condiciones1=condiciones,
         adoptada:FALSE})
         """,
         petusername1=petusername,
-        especie1=especie,
         edad1=edad,
         independencia1=independencia,
-        tamano1=tamano,
-        requiere_entrenamiento1=requiere_entrenamiento,
-        entrenada1=entrenada,
-        caracter1=caracter,
-        condiciones1=condiciones,
         )
+
+        # asignarle especie
+        if especie == '1':
+            especie = 'Perro'
+        else:
+            especie = 'Gato'
+        
+        if tamano == '1':
+            tamano = 'Grande'
+        elif tamano == '2':
+            tamano = 'Mediano'
+        elif tamano == '3':
+            tamano = 'Pequeno'
+        
+        graph.run(
+            """
+            MATCH (a:Mascota), (b:Especie)
+            WHERE a.petusername = $petusername1 AND b.tamano = $tipo AND b.especie = $especie1
+            CREATE (a)-[r:ES_UN]->(b)
+            """,
+            petusername1=petusername, especie1=especie, tipo=tamano
+        )
+
+        # asignarle require_entrenamiento, entrenada y caracter
+        requiere_entrenamiento = str(requiere_entrenamiento)
+        entrenada = str(entrenada)
+
+        if caracter == '1':
+            caracter = 'Activa'
+        else:
+            caracter = 'Tranquila'
+        
+        graph.run(
+            """
+            MATCH (a:Mascota), (b:Caracteristicas)
+            WHERE a.petusername = $petusername1 AND b.caracter = $caracter1 AND b.entrenada = $entrenada1 AND b.requiere_entrenamiento = $requiere
+            CREATE (a)-[r:POSEE_Y_REQUIERE]->(b)
+            """,
+            petusername1=petusername, caracter1=caracter, entrenada1=entrenada, requiere=requiere_entrenamiento
+        )
+
+        # asignarle condiciones
+        if condiciones == '1':
+            condicion = 'Lesion'
+        elif condiciones == '2':
+            condicion = 'Desnutricion'
+        elif condiciones == '3':
+            condicion = 'Ambas'
+        else:
+            condicion = 'Ninguna'
+
+        graph.run(
+            """
+            MATCH (a:Mascota), (b:Condiciones)
+            WHERE a.petusername = $petusername1 AND b.condicion = $condicion1
+            CREATE (a)-[r:POSEE_Y_REQUIERE]->(b)
+            """,
+            petusername1=petusername, condicion1=condicion
+        )
+
         print('\nMascota registrada\n')
     except Exception as e:
-        print('\nError al crear este usuario\n')
+        print('\nError al registrar mascota.\n')
         print(e)
 
 
 
 # FUNCION CON EL ALGORITMO PARA HACER LA RECOMENDACION
 def search_ideal_pet(user: dict):
-    return {}
+    return [{}]
 
 
 
-# FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA ADOPTADA
-def disable_pet(petusername: str, graph: Graph):
-    try:
-        graph.run("""
-        MATCH (n:Mascota {petusername:$petusername})
-        SET n.adoptada = true
-        RETURN n
-        """)
-        print("Se ha eliminado a la mascota del registro")
-    except Exception as e:
-        print(e)
-        print("Errorcito")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'''
-UNIVERSIDAD DEL VALLE DE GUATEMALA
-ALGORITMOS Y ESTRUCTURAS DE DATOS
-FASE 2 PROYECTO 2
-MODELO Y BACKEND DEL SISTEMA DE RECOMENDACIONES
-INTEGRANTES:
-ROBERTO FRANCISCO RIOS MORALES, 20979.
-NICOLE ESCOBAR 20647
-NIKOLAS DIMITRIO BADANI GASDAGLIS 20092
-MICAELA YATAZ 18960
-pongan sus nombres aqui xd
-
-# from py2neo.ogm import *
-# from py2neo import *
-# import numpy as np
-# import pandas as pd
-# from py2neo import Graph, Node, Relationship, NodeMatcher
-
-#driver = Graph("bolt://localhost:7687", auth=("neo4j","hola"))
-#matcher = NodeMatcher(driver)
-#data = pd.read_csv('Mascotas.csv', header = 0)
-
-def dataBase():
-    with open('Mascotas.csv') as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        pets = {}
-        for i in csv_reader:
-            pets[i[0]] = [i[0], i[1], i[2], i[3],i[4], i[5], i[6], i[7], i[8], i[9], i[10]]
-            
-    for j in pets:
-        tipo = pets[j][0]
-        nombre = pets[j][1]
-        tiempo = pets[j][2]
-        pelo = pets[j][3]
-        actividad = pets[j][4]
-        caracter = pets[j][5]
-        cuidados = pets[j][6]
-        entrenado = pets[j][7]
-        tamano = pets[j][8]
-        presupuesto = pets[j][9]
-        edad = pets[j][10]
-        pets[j] = Node("Mascota",tipo = pets[j][0],nombre = pets[j][1],tiempo = pets[j][2],pelo = pets[j][3],actividad = pets[j][4],caracter = pets[j][5],cuidados = pets[j][6],entrenado = pets[j][7],tamano = pets[j][8],presupuesto = pets[j][9],edad = pets[j][10])
-        
-# FUNCIONES PARA CONECTARSE A NEO4J
-# FUNCION PARA CREAR UN NUEVO USUARIO
-def create_user(username,
-                password,
-                nombre,
-                apellido,
-                fecha_nacimiento,
-                disponibilidad,
-                personalidad,
-                alergia,
-                personas_en_casa,
-                mascotas_antes,
-                ninos,
-                presupuesto,
-                tipo_vivienda,
-                tiene_jardin,
-                telefono):
-
-        print(username + '\n' +
-                password + '\n' +
-                nombre + '\n' +
-                apellido + '\n' +
-                fecha_nacimiento + '\n' +
-                disponibilidad + '\n' +
-                personalidad + '\n' +
-                alergia + '\n' +
-                personas_en_casa + '\n' +
-                mascotas_antes + '\n' +
-                ninos + '\n' +
-                presupuesto + '\n' +
-                tipo_vivienda + '\n' +
-                tiene_jardin + '\n' +
-                telefono)
-
-# FUNCION PARA VERIFICAR SI EL USUARIO YA EXISTE
-def username_exists(username):
-    # esto solo simula la verificacion, se debe hacer una verificacion real
-    if username == 'yaexiste':
-        return True
-    return False
-
-# FUNCION PARA HACER UN INICIO DE SESION
-def login_user(username, password):
-    # esto solo simula la verificacion, se debe hacer una verificacion real
-    if username == 'yaexiste' and password == '12345678':
-        return True
-    print(username + '' + password)
-
-# FUNCION PARA CREAR UNA NUEVA MASCOTA
-def create_pet(username, 
-                especie, 
-                edad, 
-                foto, 
-                independencia, 
-                tamano, 
-                requiere_entrenamiento, 
-                entrenada, 
-                caracter, 
-                condiciones, 
-                contacto):
-    pass
-
-# FUNCION PARA HACER LA RECOMENDACION
-def search_ideal_pet():
-    pass
-'''
+# FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA QUE HA SIDO ADOPTADA
+def disable_pet(user: dict, petusername: str, graph: Graph):
+    cursor = graph.run('MATCH (n:Mascota {petusername:$petusername1}), RETURN n;', petusername1=petusername)
+    adoptada = cursor.data()[0].get('n.adoptada')
+    if adoptada == 'false':
+        try:
+            username = user.get('p.username')
+            graph.run("""
+            MATCH (n:Mascota {petusername:$petusername1}), (p:Persona {username:$username1})
+            SET n.adoptada = true
+            CREATE (n)-[r:ADOPTADO_POR]->(p)
+            """, petusername1=petusername, username1=username)
+            print("Felicidades!!! Se ha adoptado a la mascota.")
+        except Exception as e:
+            print(e)
+            print("No se encontro la mascota ingresada, pruebe de nuevo.")
+    else:
+        print('La mascota ya ha sido adoptada.')
