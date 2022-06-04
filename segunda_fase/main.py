@@ -54,7 +54,12 @@ while op != '4':
 
         # llamar a la db y hacer login ------------------------------------
         is_loged, loged_user = login_user(user, passw, graphy)
-        print(f'\nIngreso exitoso, Bienvenido, {user}.')
+
+        if is_loged:
+            print(f'\nIngreso exitoso, Bienvenido, {user}.')
+        else:
+            print('\nError al ingresar, revise el username y contrasena.\n')
+
 
         # el usuario logeado ve esto: ------------------------------------
         while is_loged:
@@ -85,7 +90,8 @@ while op != '4':
             # salir del centro de adopcion, no del programa ------------------------------------
             elif op2 == '3':
                 print('\nAdios, vuelva luego.\n')
-                logoutuser(loged_user)
+                logoutuser(loged_user, graph=graphy)
+                is_loged = False
 
 
     # ------------------------------------ crear un usuario nuevo ------------------------------------
@@ -156,13 +162,6 @@ while op != '4':
                     print('El valor no esta entre 1 y 10.')
             except Exception as e:
                 print('El valor ingresado no es un numero entero, por favor intente de nuevo.')
-        
-        # validar alergias, 1=pelo gato, 2=pelo perro, 3=pelo ambos, 4=ninguno ------------------------------------
-        print('Seleccione las opciones si padece de alguna:\n[1] Alergia al pelo de gato\n[2] Alergia al pelo de perro\n[3] Alergia a ambos\n[4] Ninguna')
-        alergia_pelo = input('Su respuesta: ')
-        while alergia_pelo != '1' and alergia_pelo != '2' and alergia_pelo != '3' and alergia_pelo != '4': 
-            print('Ingreso no valido, por favor elija una opcion.')
-            alergia_pelo = input('Su respuesta: ')
 
         # validar personas en casa, entre 1-20 ------------------------------------
         ye = True
@@ -185,16 +184,6 @@ while op != '4':
             mascotas_antes = True
         else:
             mascotas_antes = False
-        
-        # verificar si hay ninos en casa, true false ------------------------------------
-        ninos = input('hay ninos en su casa? (escriba si o no): ').lower()
-        while ninos != 'si' and ninos != 'no':
-            print('Ingreso no valido')
-            ninos = input('ha tenido mascotas antes? (escriba si o no): ').lower()
-        if ninos == 'si':
-            ninos_casa = True
-        else:
-            ninos_casa = False
         
         # verificar presupuesto al mes  ------------------------------------
         ye = True
@@ -245,10 +234,8 @@ while op != '4':
         fecha,
         dispo,
         perso,
-        alergia_pelo,
         cant_pers,
         mascotas_antes,
-        ninos_casa,
         presu,
         vivienda,
         jardin_casa,
@@ -352,9 +339,10 @@ while op != '4':
         while condicion != '1' and condicion != '2' and condicion != '3' and condicion != '4': 
             print('Ingreso no valido, por favor elija una opcion.')
             condicion = input('Su respuesta: ')
+        
 
         # llamar a la funcion que se comunica con la db creando un nodo Mascota ------------------------------------
-        create_pet(pet_user, especie, edad, indep, tamano, requiere_e, entrenada, caracter, condicion, graphy)
+        create_pet(pet_user, especie, edad, indep, tamano, requiere_e, entrenada, caracter, graphy)
 
     # ------------------------------------ salir del programa ------------------------------------
     elif op == '4':

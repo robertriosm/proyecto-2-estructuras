@@ -23,10 +23,8 @@ def create_user(username: str,
                 fecha_nacimiento: str,
                 disponibilidad: str,
                 personalidad: int,
-                alergia: str,
                 personas_en_casa: str,
                 mascotas_antes: bool,
-                ninos: bool,
                 presupuesto: float,
                 tipo_vivienda: str,
                 tiene_jardin: bool,
@@ -89,8 +87,6 @@ def create_user(username: str,
         elif personalidad > 8:
             perso='Muy activo'
 
-        print(perso)
-
         graph.run(
             """
             MATCH (a:Persona), (b:Personalidad)
@@ -100,43 +96,56 @@ def create_user(username: str,
             username1=username, perso1=perso
         )
 
-        # asignarle alergias ------------------------------------
-        if alergia == '1':
-            alergia = 'Pelo de gato'
-        elif alergia == '2':
-            alergia = 'Pelo de perro'
-        elif alergia == '3':
-            alergia = 'Ambas'
-        elif alergia == '4':
-            alergia = 'Ninguna'
-
-        
-        graph.run(
-            """
-            MATCH (a:Persona), (b:Alergia)
-            WHERE a.username = $username1 AND b.alergia = $alergia1
-            CREATE (a)-[r:ALERGICO_A]->(b)
-            """,
-            username1=username, alergia1=alergia
-        )
-
         # asignarle casa ------------------------------------
         if tipo_vivienda == '1':
             tipo_vivienda = 'Grande'
         else:
             tipo_vivienda = 'Pequena'
         
-        ninos = str(ninos)
         tiene_jardin = str(tiene_jardin)
         
         graph.run(
             """
             MATCH (a:Persona), (b:Casa)
-            WHERE a.username = $username1 AND b.tamano = $tipo AND b.tiene_jardin = toBoolean($jardin) AND b.tiene_ninos = toBoolean($ninos1) 
+            WHERE a.username = $username1 AND b.tamano = $tipo AND b.tiene_jardin = toBoolean($jardin)
             CREATE (a)-[r:VIVE_EN]->(b)
             """,
-            username1=username, tipo=tipo_vivienda, ninos1=ninos, jardin = tiene_jardin
+            username1=username, tipo=tipo_vivienda, jardin = tiene_jardin
         )
+
+        # asignarle mascotas que puede manejar ------------------------------------
+        if not mascotas_antes and personas_en_casa > 3:
+            graph.run(
+                """
+                match (n:Persona), (c:Caracteristicas)
+                where n.username=$username1 and c.entrenada=toBoolean(false) or c.requiere_entrenamiento=toBoolean(false)
+                create (n)-[r:PUEDE_CON]->(c)
+                """, username1=username
+            )
+        elif not mascotas_antes and personas_en_casa <= 3:
+            graph.run(
+                """
+                match (n:Persona), (c:Caracteristicas)
+                where n.username=$username1 and c.entrenada=toBoolean(false) and c.requiere_entrenamiento=toBoolean(false)
+                create (n)-[r:PUEDE_CON]->(c)
+                """, username1=username
+            )
+        elif mascotas_antes and personas_en_casa > 3:
+            graph.run(
+                """
+                match (n:Persona), (c:Caracteristicas)
+                where n.username=$username1 and c.entrenada=toBoolean(false) and c.requiere_entrenamiento=toBoolean(false)
+                create (n)-[r:PUEDE_CON]->(c)
+                """, username1=username
+            )
+        elif mascotas_antes and personas_en_casa <= 3:
+            graph.run(
+                """
+                match (n:Persona), (c:Caracteristicas)
+                where n.username=$username1 and c.entrenada=toBoolean(false) and c.requiere_entrenamiento=toBoolean(true)
+                create (n)-[r:PUEDE_CON]->(c)
+                """, username1=username, 
+            )
 
         print('\nUsuario creado\n')
         
@@ -186,12 +195,11 @@ def pet_username_exists(petusername: str, graph: Graph):
 
 # ------------------------------------ PARA HACER LOGOUT ------------------------------------
 def logoutuser(user: dict, graph: Graph):
-    username = user.get('username')
+    username = user.get('n').get('username')
     try:
         graph.run("""
             MATCH (n:Persona {username: $username1})
             SET n.loged = false
-            RETURN n
             """, username1=username)
     except Exception as e:
         print(e)
@@ -208,7 +216,6 @@ def create_pet(petusername: str,
                 requiere_entrenamiento: bool,
                 entrenada: bool,
                 caracter: str,
-                condiciones: str,
                 graph: Graph):
     try:
         graph.run("""
@@ -222,6 +229,9 @@ def create_pet(petusername: str,
         independencia1=independencia,
         )
 
+        # vincular la mascota a sus necesidades de entrenamiento ------------------------------------
+
+
         # asignarle especie ------------------------------------
         if especie == '1':
             especie = 'Perro'
@@ -230,58 +240,125 @@ def create_pet(petusername: str,
         
         if tamano == '1':
             tamano = 'Grande'
+            casa = 'Grande'
+            graph.run(
+                """
+                MATCH (a:Mascota), (b:Especie), (c:Casa)
+                WHERE a.petusername = $petusername1 AND b.tamano = $tipo AND b.especie = $especie1 AND c.tamano = $casa1 AND c.tiene_jardin = toBoolean('true')
+                CREATE (a)-[r:ES_UN]->(b)
+                CREATE (a)-[re:NECESITA_VIVIR_EN]->(c);
+                """,
+                petusername1=petusername, especie1=especie, tipo=tamano, casa1=casa
+            )
         elif tamano == '2':
             tamano = 'Mediano'
+            casa = 'Grande'
+            graph.run(
+                """ 
+                MATCH (a:Mascota), (b:Especie), (c:Casa)
+                WHERE a.petusername = $petusername1 AND b.tamano = $tipo AND b.especie = $especie1 AND c.tamano = $casa1
+                CREATE (a)-[r:ES_UN]->(b)
+                CREATE (a)-[re:NECESITA_VIVIR_EN]->(c)
+                """,
+                petusername1=petusername, especie1=especie, tipo=tamano, casa1=casa
+            ) 
         elif tamano == '3':
             tamano = 'Pequeno'
-        
-        graph.run(
-            """
-            MATCH (a:Mascota), (b:Especie)
-            WHERE a.petusername = $petusername1 AND b.tamano = $tipo AND b.especie = $especie1
-            CREATE (a)-[r:ES_UN]->(b)
-            """,
-            petusername1=petusername, especie1=especie, tipo=tamano
-        )
+            casa = 'Pequena'
+            graph.run(
+                """
+                MATCH (a:Mascota), (b:Especie), (c:Casa)
+                WHERE a.petusername = $petusername1 AND b.tamano = $tipo AND b.especie = $especie1 AND c.tamano = $casa1
+                CREATE (a)-[r:ES_UN]->(b)
+                CREATE (a)-[re:NECESITA_VIVIR_EN]->(c)
+                """,
+                petusername1=petusername, especie1=especie, tipo=tamano, casa1=casa
+            )
 
-        # asignarle require_entrenamiento, entrenada y caracter ------------------------------------
+        
+
+        # asignarle caracter ------------------------------------
         requiere_entrenamiento = str(requiere_entrenamiento)
         entrenada = str(entrenada)
 
         if caracter == '1':
-            caracter = 'Activa'
+            caracter1 = 'Activo'
+            caracter2 = 'Muy activo'
         else:
-            caracter = 'Tranquila'
+            caracter1 = 'Muy sedentaria'
+            caracter2 = 'Sedentaria'
+
+        caracter3 = 'Normal'
         
         graph.run(
             """
-            MATCH (a:Mascota), (b:Caracteristicas)
-            WHERE a.petusername = $petusername1 AND b.caracter = $caracter1 AND b.entrenada = $entrenada1 AND b.requiere_entrenamiento = $requiere
-            CREATE (a)-[r:POSEE_Y_REQUIERE]->(b)
+            MATCH (a:Mascota), (b:Personalidad)
+            WHERE a.petusername = $petusername1 AND (b.personalidad = $caracter11 OR b.personalidad = $caracter12 OR b.personalidad = $caracter13)
+            CREATE (a)-[r:PARECIDO_A]->(b)
             """,
-            petusername1=petusername, caracter1=caracter, entrenada1=entrenada, requiere=requiere_entrenamiento
+            petusername1=petusername, caracter11=caracter1, caracter12=caracter2, caracter13=caracter3
         )
 
-        # asignarle condiciones ------------------------------------
-        if condiciones == '1':
-            condicion = 'Lesion'
-        elif condiciones == '2':
-            condicion = 'Desnutricion'
-        elif condiciones == '3':
-            condicion = 'Ambas'
-        else:
-            condicion = 'Ninguna'
-
+        # asignarle si requiere o esta entrenada para vincular con usuarios
         graph.run(
             """
-            MATCH (a:Mascota), (b:Condiciones)
-            WHERE a.petusername = $petusername1 AND b.condicion = $condicion1
-            CREATE (a)-[r:POSEE_Y_REQUIERE]->(b)
+            MATCH (a:Mascota), (b:Caracteristicas)
+            WHERE a.petusername = $petusername1
+            AND (b.entrenada = toBoolean($entrenada1) AND b.requiere_entrenamiento = toBoolean($requiere))
+            CREATE (a)-[r:HA_SIDO]->(b)
             """,
-            petusername1=petusername, condicion1=condicion
+            petusername1=petusername, entrenada1=str(entrenada), requiere = str(requiere_entrenamiento)
         )
 
+        # asignarle la disponibilidad del dueno en base a su independencia
+        if independencia <= 2:
+            indep = 'Muy disponible'
+            indep2 = ''
+            indep3 = ''
+            indep4 = ''
+            indep5 = ''
+        elif independencia <= 4:
+            indep = 'Muy disponible'
+            indep2 = 'Disponible'
+            indep3 = ''
+            indep4 = ''
+            indep5 = ''
+        elif independencia <= 6:
+            indep = 'Muy disponible'
+            indep2 = 'Disponible'
+            indep3 = 'Normal'
+            indep4 = ''
+            indep5 = ''
+        elif independencia <= 8:
+            indep = 'Muy disponible'
+            indep2 = 'Disponible'
+            indep3 = 'Normal'
+            indep4 = 'Poca disponible'
+            indep5 = '' 
+        elif independencia <= 10:
+            indep = 'Muy disponible'
+            indep2 = 'Disponible'
+            indep3 = 'Normal'
+            indep4 = 'Poca disponible'
+            indep5 = 'Muy poco disponible' 
+            
+        graph.run(
+                """
+                MATCH (a:Mascota), (b:Disponibilidad)
+                WHERE a.petusername = $petusername1
+                AND (b.disponibilidad = $indep1 OR b.disponibilidad = $indep12 OR b.disponibilidad = $indep13 OR b.disponibilidad = $indep14 OR b.disponibilidad = $indep15)
+                CREATE (a)-[r:NECESITA_DISPONIBILIDAD]->(b)
+                """,
+                petusername1=petusername,
+                indep1=indep,
+                indep12=indep2,
+                indep13=indep3,
+                indep14=indep4,
+                indep15=indep5,
+            )
+
         print('\nMascota registrada\n')
+
     except Exception as e:
         print('\nError al registrar mascota.\n')
         print(e)
@@ -301,19 +378,22 @@ def search_ideal_pet(user: dict, graph: Graph):
 
 # ------------------------------------ FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA QUE HA SIDO ADOPTADA ------------------------------------
 def disable_pet(user: dict, petusername: str, graph: Graph):
-    adoptada = cursor.data()[0].get('n.adoptada')
-    if adoptada == 'false':
-        try:
-            cursor = graph.run('MATCH (n:Mascota {petusername:$petusername1}) RETURN n;', petusername1=petusername)
-            username = user.get('p.username')
-            graph.run("""
-            MATCH (n:Mascota {petusername:$petusername1}), (p:Persona {username:$username1})
-            SET n.adoptada = true
-            CREATE (n)-[r:ADOPTADO_POR]->(p)
-            """, petusername1=petusername, username1=username)
-            print("Felicidades!!! Se ha adoptado a la mascota.")
-        except Exception as e:
-            print(e)
-            print("No se encontro la mascota ingresada, pruebe de nuevo.")
-    else:
-        print('La mascota ya ha sido adoptada.')
+    try:
+        cursor = graph.run("MATCH (m:Mascota {petusername: $username1}) RETURN m",username1=petusername)
+        adoptada = bool(cursor.data()[0].get('m').get('adoptada'))
+        if adoptada == False:
+            try:
+                cursor = graph.run('MATCH (n:Mascota {petusername:$petusername1}) RETURN n;', petusername1=petusername)
+                username = user.get('n').get('username')
+                graph.run("""
+                MATCH (n:Mascota {petusername:$petusername1}), (p:Persona {username:$username1})
+                SET n.adoptada = true
+                CREATE (n)-[r:ADOPTADO_POR]->(p)
+                """, petusername1=petusername, username1=username)
+                print("Felicidades!!! Se ha adoptado a la mascota.")
+            except Exception as e:
+                print(e)
+        else:
+            print('La mascota ya ha sido adoptada.')
+    except Exception as e:
+        print(e)
