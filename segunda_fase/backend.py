@@ -71,7 +71,7 @@ def create_user(username: str,
         graph.run(
             """
             MATCH (a:Persona), (b:Disponibilidad)
-            WHERE a.username = $username1 AND b.personalidad = $perso1 
+            WHERE a.username = $username1 AND b.disponibilidad = $dispo1 
             CREATE (a)-[r:SE_ENCUENTRA]->(b)
             """,
             username1=username, dispo1=dispo
@@ -89,6 +89,8 @@ def create_user(username: str,
         elif personalidad > 8:
             perso='Muy activo'
 
+        print(perso)
+
         graph.run(
             """
             MATCH (a:Persona), (b:Personalidad)
@@ -100,13 +102,13 @@ def create_user(username: str,
 
         # asignarle alergias ------------------------------------
         if alergia == '1':
-            alergia = 'pelo de gato'
+            alergia = 'Pelo de gato'
         elif alergia == '2':
-            alergia = 'pelo de perro'
+            alergia = 'Pelo de perro'
         elif alergia == '3':
-            alergia = 'ambos'
+            alergia = 'Ambas'
         elif alergia == '4':
-            alergia = 'ninguno'
+            alergia = 'Ninguna'
 
         
         graph.run(
@@ -152,8 +154,7 @@ def username_exists(username: str, graph: Graph):
         return True
     except Exception:
         return False
-
-
+        
 
 # ------------------------------------ FUNCION PARA HACER UN INICIO DE SESION ------------------------------------
 def login_user(username: str, password: str, graph: Graph):
@@ -288,17 +289,22 @@ def create_pet(petusername: str,
 
 
 # ------------------------------------ FUNCION CON EL ALGORITMO PARA HACER LA RECOMENDACION ------------------------------------
-def search_ideal_pet(user: dict):
+def search_ideal_pet(user: dict, graph: Graph):
+    graph.run(
+        """
+        
+        """
+    )
     return [{}]
 
 
 
 # ------------------------------------ FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA QUE HA SIDO ADOPTADA ------------------------------------
 def disable_pet(user: dict, petusername: str, graph: Graph):
-    cursor = graph.run('MATCH (n:Mascota {petusername:$petusername1}), RETURN n;', petusername1=petusername)
     adoptada = cursor.data()[0].get('n.adoptada')
     if adoptada == 'false':
         try:
+            cursor = graph.run('MATCH (n:Mascota {petusername:$petusername1}) RETURN n;', petusername1=petusername)
             username = user.get('p.username')
             graph.run("""
             MATCH (n:Mascota {petusername:$petusername1}), (p:Persona {username:$username1})

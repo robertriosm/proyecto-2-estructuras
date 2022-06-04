@@ -25,7 +25,7 @@ fechamax = datetime.datetime(2012, 1, 1)
 fechamin = datetime.datetime(1915, 1, 1)
 
 # ------------------------------------ MENU PRINCIPAL ------------------------------------
-while op != '3':
+while op != '4':
     print(
         '\nBIENVENIDO A RECOMENDACIONES DE MASCOTAS'
         '\n[1] Ingresar.'
