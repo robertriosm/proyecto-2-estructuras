@@ -10,6 +10,8 @@ Solo es necesario tener instalado python y py2neo. Todo esta en el folder **segu
 
 `pip install py2neo`
 
+Aqui esta el **[link al video](https://youtu.be/jBzRhA7xnnU)** explicando el proyecto.
+
 ### Files y folders
 
 - backend.py -> todas las funciones para conectarse al backend
