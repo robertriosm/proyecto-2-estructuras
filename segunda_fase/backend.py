@@ -229,8 +229,6 @@ def create_pet(petusername: str,
         independencia1=independencia,
         )
 
-        # vincular la mascota a sus necesidades de entrenamiento ------------------------------------
-
 
         # asignarle especie ------------------------------------
         if especie == '1':
@@ -367,14 +365,37 @@ def create_pet(petusername: str,
 
 # ------------------------------------ FUNCION CON EL ALGORITMO PARA HACER LA RECOMENDACION ------------------------------------
 def search_ideal_pet(user: dict, graph: Graph):
-    graph.run(
+    result = []
+    username = user.get('n').get('username')
+    cursor = graph.run(
         """
-        
-        """
+        MATCH (p:Persona{username:$username1})-[:VIVE_EN]->(m)<-[:NECESITA_VIVIR_EN]-(mascotas)
+        RETURN mascotas
+        """, username1=username
     )
-    return [{}]
-
-
+    result.extend(cursor.data())
+    cursor = graph.run(
+        """
+        MATCH (p:Persona{username:$username1})-[:PUEDE_CON]->(m)<-[:HA_SIDO]-(mascotas)
+        RETURN mascotas
+        """, username1=username
+    )
+    result.extend(cursor.data())
+    cursor = graph.run(
+        """
+        MATCH (p:Persona{username:$username1})-[:SE_ENCUENTRA]->(m)<-[:NECESITA_DISPONIBILIDAD]-(mascotas)
+        RETURN mascotas
+        """, username1=username
+    )
+    result.extend(cursor.data())
+    cursor = graph.run(
+        """
+        MATCH (p:Persona{username:$username1})-[:ES]->(m)<-[:PARECIDO_A]-(mascotas)
+        RETURN mascotas
+        """, username1=username
+    )
+    result.extend(cursor.data())
+    return result
 
 # ------------------------------------ FUNCION PARA DESHABILITAR DE LA RECOMENDACION A UNA MASCOTA QUE HA SIDO ADOPTADA ------------------------------------
 def disable_pet(user: dict, petusername: str, graph: Graph):

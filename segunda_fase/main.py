@@ -73,7 +73,7 @@ while op != '4':
             # llamar al algoritmo de recomendacion ------------------------------------
             if op2 == '1':
                 print('\n A continuacion se muestran las mascotas que coinciden con usted:\n')
-                for m in search_ideal_pet(loged_user):
+                for m in search_ideal_pet(loged_user, graph=graphy):
                     print(m)
 
             # adoptar una mascota ------------------------------------
